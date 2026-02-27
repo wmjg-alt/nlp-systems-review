@@ -1,0 +1,32 @@
+# --- Data Files (Generated/Synthetic) ---
+# Ignore the raw data lakes and logs
+*.log
+*.json
+!messy_inventory.json  # Optional: Keep if you want a sample, but usually better to ignore
+sharding/log.log
+data_analytics/messy_inventory.json
+
+# --- Intermediate Data Artifacts ---
+# Ignore pandas pickles and temporary data states
+*.pkl
+*.parquet
+*.csv
+data_analytics/*.pkl
+
+# --- Documentation Artifacts ---
+# Ignore generated visualizations and reports
+*.png
+sharding/blacklist.txt
+sharding/ground_truth.txt
+text_comparison/docs/*.txt
+!text_comparison/docs/lorem_ipsum.txt # Keep the seed file
+
+# --- Python Environment & Cruft ---
+__pycache__/
+*.pyc
+.env
+.venv/
+env/
+dist/
+build/
+.DS_Store

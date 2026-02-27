@@ -1,65 +1,79 @@
-# Applied Data Engineering & NLP Systems
+# Applied NLP & Data Engineering Systems
 
 A practical, code-first study guide and architectural reference for building scalable data pipelines and Information Retrieval (IR) systems. 
 
-This repository bridges the gap between theoretical algorithms and production-grade system design. Rather than relying on black-box libraries, these modules implement core algorithms from scratch to demonstrate their mathematical trade-offs, edge cases, and scaling limitations under extreme data constraints.
+We hope to bridge the gap between theoretical algorithms and production-grade system design. Rather than relying on black-box libraries, these modules implement core algorithmic examples from scratch to demonstrate their mathematical TRADE-OFFS, EDGE CASES, and SCALING LIMITATIONS under extreme data constraints.
 
 ## Design Philosophy
-* **Pedagogical Output**: Every script is designed to be run. Extensive logging explicitly demonstrates the "Why" and "How" of algorithm behavior, forcing edge cases and failures to highlight system boundaries.
-* **Standard Library First**: Core logic is built using Python's standard library whenever possible to expose the underlying mechanics (e.g., building an Inverted Index or LSH Bucket system from scratch).
-* **Modular Architecture**: Concepts are isolated into distinct domains and directories, making it easy to study individual paradigms.
+* **Pedagogical Output**: Every script is instrumented with extensive logging to demonstrate the "Why" and "How" of algorithm behavior, forcing edge cases and failures to highlight system boundaries.
+* **Standard Library First**: Logic is implemented in raw Python/NumPy whenever possible to expose the underlying mechanics (e.g., building an Inverted Index or LSH Bucket system from scratch).
+* **Resource Awareness**: Every module considers memory constraints ($O(1)$ space) and computational complexity ($O(N)$ vs $O(N^2)$) as high priorities.
 
 ---
 
 ## Repository Structure
 ```text
-├── sharding/
-│   ├── log_sharder.py              # Core Logic: Map-Reduce sharding algorithm
-│   └── shard_log_generator.py      # Utility: Generates noisy log data with planted signals
-└── text_comparison/
-    ├── generate_level3_docs.py     # Utility: Builds a little test corpus
-    ├── text_comparisons_1.py       # Level 1: Exact Identity & Bloom Filters
-    ├── text_comparisons_2.py       # Level 2: Fuzzy Matching & Metric Search
-    ├── text_comparisons_3.py       # Level 3: Syntactic Similarity & LSH
-    ├── text_comparisons_4.py       # Level 4: Lexical Search (IR) & BM25
-    └── text_comparisons_5.py       # Level 5: Semantic Vectors & Hybrid Search
+├── text_comparison/    # Identity, Fuzzy, Syntactic, Lexical, and Semantic matching
+├── data_sampling/      # Stratification, Weak Supervision, and Active Learning
+├── data_analytics/     # ETL, Window Functions, and Strategic Visualization
+├── mini_lessons/       # Specialized deep-dives (Regex ReDoS, Clustering)
+├── metrics/            # (WIP): Evaluation frameworks (Precision/Recall, Kappa, etc.)
+├── sharding/           # (WIP): Map-Reduce shards for Big Data
+└── python_practice/    # (WIP): Performance engineering (GIL, Generators, more)
 ```
 
 ---
 
-## Module 1: Big Data Processing & Sharding (`/sharding`)
-**Focus:** Processing massive datasets (e.g., 80TB log files) on strictly memory-constrained environments (e.g., 64GB RAM) without distributed frameworks like Spark.
+## Module 1: Big Data Architecture (`/sharding`)
+**The Question:** "How do you process data larger than RAM?"
 
-* **Algorithmic Sharding:** (`log_sharder.py`) Implementing consistent hashing to partition data deterministically.
-* **Map-Reduce Paradigms:** Demonstrating the critical importance of early heuristic filtering (Map phase) to prevent disk I/O bottlenecks.
-* **Resource Safety:** Dynamic shard calculation based on available RAM and OS file-handle limits (`ulimit`).
-* **Validation:** Use `shard_log_generator.py` to plant "bad actors" in a sea of noise, then verify the sharder's output against `ground_truth.txt`.
+* **Consistent Hashing:** Implementing deterministic partitioning to group data without $O(N^2)$ overhead.
+* **Heuristic Filtering:** Demonstrating the "Map Phase" trick of string-matching before JSON parsing to save hours of CPU time.
+* **Use Case:** Forensic analysis of 80TB security logs to identify credential-stuffing IPs on a single 64GB machine.
 
 ---
 
 ## Module 2: The Text Comparison Spectrum (`/text_comparison`)
-**Focus:** A five-level progression of comparing text, scaling from byte-level cryptographic identity to multi-dimensional semantic meaning. 
+**The Question:** "How do you define and measure similarity?"
 
-### Level 1: Exact Identity & Probabilistic Scaling (`text_comparisons_1.py`)
-* **Concepts:** SHA-256 Hashing, Normalization strictness, Hash Collisions (The Pigeonhole Principle).
-* **Scale Architecture:** Implementing **Bloom Filters** to perform O(1) membership checks on billions of records with fixed memory footprints, demonstrating the False Positive trade-off.
-
-### Level 2: Fuzzy Matching & Metric Search (`text_comparisons_2.py`)
-* **Concepts:** Edit Distances (Levenshtein vs. Damerau-Levenshtein), Transposition handling, Prefix-biased similarity (Jaro-Winkler), and Morphological Stemming.
-* **Scale Architecture:** Transitioning from O(N) linear scans to O(1) and O(log N) metric spaces using **SymSpell** (Symmetric Delete Indexing) and **BK-Trees**.
-
-### Level 3: Syntactic Similarity (`text_comparisons_3.py`)
-* **Concepts:** N-Gram Shingling, Jaccard Similarity, and the Subset/Plagiarism problem (Containment vs. Jaccard).
-* **Scale Architecture:** Compressing massive documents into fixed-size integer signatures using **MinHash**, and completely avoiding O(N²) all-to-all comparisons using **Locality Sensitive Hashing (LSH)** via banding. *(Run `generate_level3_docs.py` first to populate the `docs/` test corpus).*
-
-### Level 4: Lexical Search / Information Retrieval (`text_comparisons_4.py`)
-* **Concepts:** Term Frequency vs. Inverse Document Frequency, Query Expansion (The Vocabulary Gap), and Keyword Saturation.
-* **Scale Architecture:** Building an **Inverted Index**, upgrading to a **Positional Index** to support exact-phrase matching, and mathematically proving why **BM25** outperforms raw TF-IDF for length normalization.
-
-### Level 5: Semantic Search / Dense Embeddings (`text_comparisons_5.py`)
-* **Concepts:** Information Dilution, Chunking strategies, Dense Vectors, and Cosine Similarity.
-* **Scale Architecture:** Mapping out a mock Vector Database (ANN/HNSW concepts) and solving the Semantic/Lexical divide by building a Hybrid Search pipeline fused with **Reciprocal Rank Fusion (RRF)**.
+### Level 1: Exact Identity & Bloom Filters
+* **Use Case:** Checking if a URL has been crawled before or verifying file integrity (checksums).
+### Level 2: Fuzzy Matching & Metric Search
+* **Use Case:** Search bar autocorrect ("iphne" ➔ "iphone") and resolving duplicate "John Smith" records in a CRM.
+### Level 3: Syntactic Similarity & LSH
+* **Use Case:** Detecting plagiarism in long-form articles or deduplicating massive web-scraped datasets (CommonCrawl).
+### Level 4: Lexical Search (IR) & BM25
+* **Use Case:** E-commerce product search and technical log retrieval where exact part numbers or error codes matter.
+### Level 5: Semantic Search & Hybrid RRF
+* **Use Case:** Building a Retrieval-Augmented Generation (RAG) system that understands intent ("computer broke" ➔ "laptop repair guide").
 
 ---
 
-*More modules will be appended as this repository expands.*
+## Module 3: Corpus Curation & Data Sampling (`/data_sampling`)
+**The Question:** "How do you select high-value data for human annotation?"
+
+### Level 1: Stratified Baselines
+* **Use Case:** Creating a statistically honest "Golden Test Set" that doesn't ignore rare 1% classes like "Fraud."
+### Level 2: Weak Supervision (Heuristics)
+* **Use Case:** "Cold-starting" a new feature (e.g., "Cancel Subscription") with 10 million raw logs and zero labels.
+### Level 3: Uncertainty Sampling
+* **Use Case:** Identifying the "Decision Boundary" to efficiently teach a model the difference between "Downgrade" and "Cancel."
+### Level 4: Geometric Diversity (Core-Set)
+* **Use Case:** Discovering "Unknown Unknowns" by sampling from every semantic neighborhood in a dataset.
+### Level 5: Hybrid Active Learning
+* **Use Case:** Production-grade sampling that picks "Confusing" data while automatically rejecting unlearnable "Noise."
+
+---
+
+## Module 4: Data Analytics & Strategic Insights (`/data_analytics`)
+**The Question:** "Can you find the story in the data?"
+
+* **Step 1: Synthetic Sabotage:** Programmatically injecting "Real-World Mess" (Nested JSON, Unicode noise, date chaos).
+* **Step 2: The Data Janitor:** Professional ETL patterns using `pd.json_normalize` and schema coalescing.
+* **Step 3: Window Functions:** Using `.transform()` for category-relative Z-scores to find "Hidden Gems."
+* **Step 4: Applied Science:** Time-series resampling and "Rating Decay" detection.
+* **Step 5: Visual Storytelling:** Using Faceting and KDE distributions to justify business decisions.
+
+---
+
+*More modules will come...*
